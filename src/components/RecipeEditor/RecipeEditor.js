@@ -1,16 +1,13 @@
 import { React, useContext, useState } from "react";
-import { getFullIngredientText } from "../../utilities/helper";
 import { makeStyles } from "@material-ui/core/styles";
-import TextField from "@material-ui/core/TextField";
-import { Button, Chip } from "@material-ui/core";
+import { Button } from "@material-ui/core";
 import StateContext from "../../utilities/StateContext";
 import axios from "axios";
 import AddedIngredients from "./AddedIngredients";
 import RecipeForm from "./RecipeForm";
 import { useHistory } from "react-router-dom";
 
-// TODO theme
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles({
     root: {
         display: "flex",
         justifyContent: "center",
@@ -46,21 +43,23 @@ const useStyles = makeStyles((theme) => ({
         textTransform: "uppercase",
         margin: "20px 0 0 0",
     },
-}));
+});
 
-const RecipeEditor = ({ match }) => {
+const RecipeEditor = ({ match, location }) => {
     const classes = useStyles();
     const history = useHistory();
     const stateContext = useContext(StateContext);
 
     const editMode = match && match.params.recipeId;
 
-    const [ingredients, setIngredients] = useState([]);
+    const [ingredients, setIngredients] = useState(
+        (editMode && location.state.ingredients) || []
+    );
 
     const [formData, setFormData] = useState({
-        title: "",
-        img: "",
-        notes: "",
+        title: (editMode && location.state.title) || "",
+        img: (editMode && location.state.img) || "",
+        notes: (editMode && location.state.notes) || "",
         ingredient: {
             name: "",
             quantity: "",

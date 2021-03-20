@@ -1,5 +1,5 @@
 import React from "react";
-import { makeStyles, StylesProvider } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
 import CardActionArea from "@material-ui/core/CardActionArea";
 import CardActions from "@material-ui/core/CardActions";
@@ -10,8 +10,6 @@ import Typography from "@material-ui/core/Typography";
 import CommentIcon from "@material-ui/icons/Comment";
 import Ingredients from "./Ingredients";
 import { useHistory } from "react-router-dom";
-
-// import styles from "./RecipeTile.module.scss";
 
 const useStyles = makeStyles({
     root: {
@@ -42,8 +40,13 @@ export default function MediaCard({ recipe }) {
     const classes = useStyles();
     const history = useHistory();
 
-    const redirectTo = (url) => {
-        history.push(url);
+    const editRecipe = () => {
+        history.push({
+            pathname: `recipe-editor/${recipe.id}`,
+            state: {
+                ...recipe,
+            },
+        });
     };
     return (
         <Card className={classes.root}>
@@ -73,11 +76,7 @@ export default function MediaCard({ recipe }) {
                 <Button size="small" color="primary">
                     View
                 </Button>
-                <Button
-                    size="small"
-                    color="primary"
-                    onClick={() => redirectTo(`recipe-editor/${recipe.id}`)}
-                >
+                <Button size="small" color="primary" onClick={editRecipe}>
                     Edit
                 </Button>
             </CardActions>

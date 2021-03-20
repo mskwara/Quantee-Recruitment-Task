@@ -1,18 +1,23 @@
-import { QueryClient, QueryClientProvider, useQuery } from "react-query";
+import { QueryClient, QueryClientProvider } from "react-query";
 import Topbar from "./components/Topbar/Topbar";
 import RecipeEditor from "./components/RecipeEditor/RecipeEditor";
 import Recipes from "./components/Recipes/Recipes";
-import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import Alert from "./components/Alert/Alert";
 import { useState } from "react";
 import StateContext from "./utilities/StateContext";
 import { makeStyles } from "@material-ui/core";
+import { ThemeProvider } from "@material-ui/core/styles";
+import muiTheme from "./utilities/theme";
+import NotFound from "./components/NotFound/NotFound";
 
 const queryClient = new QueryClient();
 
 const useStyles = makeStyles({
     page: {
         padding: 20,
+        display: "flex",
+        justifyContent: "center",
     },
 });
 
@@ -47,30 +52,33 @@ const App = () => {
                     showAlert,
                 }}
             >
-                <div className="App">
-                    <Router>
-                        <Topbar />
-                        {alertState.visible && (
-                            <Alert
-                                content={alertState.content}
-                                type={alertState.type}
-                            />
-                        )}
-                        <main className={classes.page}>
-                            <Switch>
-                                <Route path="/" exact component={Recipes} />
-                                <Route
-                                    path="/create-recipe"
-                                    component={RecipeEditor}
+                <ThemeProvider theme={muiTheme}>
+                    <div className="App">
+                        <Router>
+                            <Topbar />
+                            {alertState.visible && (
+                                <Alert
+                                    content={alertState.content}
+                                    type={alertState.type}
                                 />
-                                <Route
-                                    path="/recipe-editor/:recipeId"
-                                    component={RecipeEditor}
-                                />
-                            </Switch>
-                        </main>
-                    </Router>
-                </div>
+                            )}
+                            <main className={classes.page}>
+                                <Switch>
+                                    <Route path="/" exact component={Recipes} />
+                                    <Route
+                                        path="/create-recipe"
+                                        component={RecipeEditor}
+                                    />
+                                    <Route
+                                        path="/recipe-editor/:recipeId"
+                                        component={RecipeEditor}
+                                    />
+                                    <Route path="/" component={NotFound} />
+                                </Switch>
+                            </main>
+                        </Router>
+                    </div>
+                </ThemeProvider>
             </StateContext.Provider>
         </QueryClientProvider>
     );

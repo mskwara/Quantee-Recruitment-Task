@@ -2,7 +2,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { getFullIngredientText } from "../../utilities/helper";
 import { Chip } from "@material-ui/core";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles({
     root: {
         gridArea: "aside",
         display: "flex",
@@ -15,7 +15,7 @@ const useStyles = makeStyles((theme) => ({
         fontSize: "10pt",
         textAlign: "center",
     },
-}));
+});
 
 const AddedIngredients = ({
     ingredients,

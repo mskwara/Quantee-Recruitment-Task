@@ -1,14 +1,16 @@
-// import "./Recipes.css";
-import { useEffect } from "react";
 import { useQuery } from "react-query";
-import axios from "axios";
+// import axios from "axios";
 import RecipeTile from "./RecipeTile/RecipeTile";
-import { makeStyles } from "@material-ui/core";
+import ErrorPage from "../ErrorPage/ErrorPage";
+import { CircularProgress, makeStyles } from "@material-ui/core";
 
 const useStyles = makeStyles({
     root: {
         display: "flex",
         flexWrap: "wrap",
+    },
+    spinner: {
+        margin: "auto",
     },
 });
 
@@ -80,11 +82,16 @@ const Recipes = () => {
             },
         ];
     });
-    if (isLoading) return "Loading...";
+    if (isLoading)
+        return (
+            <CircularProgress
+                classes={{
+                    root: classes.spinner,
+                }}
+            />
+        );
 
-    if (error) return "An error has occurred: " + error.message;
-
-    console.log(data);
+    if (error) return <ErrorPage />;
 
     return (
         <div className={classes.root}>
