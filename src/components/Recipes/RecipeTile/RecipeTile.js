@@ -11,7 +11,7 @@ import CommentIcon from "@material-ui/icons/Comment";
 import Ingredients from "./Ingredients";
 import { useHistory } from "react-router-dom";
 
-import styles from "./RecipeTile.module.scss";
+// import styles from "./RecipeTile.module.scss";
 
 const useStyles = makeStyles({
     root: {
@@ -27,6 +27,14 @@ const useStyles = makeStyles({
     },
     buttons: {
         marginTop: "auto",
+    },
+    notes: {
+        display: "flex",
+        alignItems: "center",
+
+        "& p": {
+            marginLeft: 10,
+        },
     },
 });
 
@@ -51,7 +59,7 @@ export default function MediaCard({ recipe }) {
                     </Typography>
 
                     <Ingredients ingredients={recipe.ingredients} />
-                    <span className={styles.notes}>
+                    <span className={classes.notes}>
                         <CommentIcon color="primary" />
                         <p>{recipe.notes}</p>
                     </span>

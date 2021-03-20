@@ -1,4 +1,3 @@
-import styles from "./RecipeEditor.module.scss";
 import { React, useContext, useState } from "react";
 import { getFullIngredientText } from "../../utilities/helper";
 import { makeStyles } from "@material-ui/core/styles";
@@ -6,29 +5,57 @@ import TextField from "@material-ui/core/TextField";
 import { Button, Chip } from "@material-ui/core";
 import StateContext from "../../utilities/StateContext";
 import axios from "axios";
+import AddedIngredients from "./AddedIngredients";
+import RecipeForm from "./RecipeForm";
+import { useHistory } from "react-router-dom";
 
+// TODO theme
 const useStyles = makeStyles((theme) => ({
     root: {
-        "& > *": {
-            margin: theme.spacing(1),
-            width: "100%",
+        display: "flex",
+        justifyContent: "center",
+        "& main": {
+            padding: 20,
+            backgroundColor: "white",
+            boxShadow: "1px 1px 2px rgba(0, 0, 0, 0.5)",
+            width: 800,
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            gridTemplateRows: "auto 50px",
+            gridTemplateAreas: `'form aside' 
+                'publish publish'`,
+            columnGap: 20,
+
+            "@media only screen and (max-width: 600px)": {
+                gridTemplateColumns: "1fr",
+                gridTemplateRows: "auto auto 50px",
+                gridTemplateAreas: `"form"
+                    "aside"
+                    "publish"`,
+                columnGap: 0,
+            },
         },
+    },
+    publishButton: {
+        gridArea: "publish",
+        margin: "0 8px",
+    },
+    label: {
+        fontSize: "14pt",
+        fontFamily: "Calibri",
+        textTransform: "uppercase",
+        margin: "20px 0 0 0",
     },
 }));
 
 const RecipeEditor = ({ match }) => {
     const classes = useStyles();
+    const history = useHistory();
     const stateContext = useContext(StateContext);
 
     const editMode = match && match.params.recipeId;
 
-    const [ingredients, setIngredients] = useState([
-        {
-            name: "water",
-            quantity: 1000,
-            unit: "ml",
-        },
-    ]);
+    const [ingredients, setIngredients] = useState([]);
 
     const [formData, setFormData] = useState({
         title: "",
@@ -54,6 +81,17 @@ const RecipeEditor = ({ match }) => {
         });
     };
 
+    const resetIngredient = () => {
+        setFormData({
+            ...formData,
+            ingredient: {
+                name: "",
+                quantity: "",
+                unit: "",
+            },
+        });
+    };
+
     const handleBasicsChange = (event) => {
         const updatedFormData = { ...formData };
         updatedFormData[event.target.name] = event.target.value;
@@ -70,6 +108,7 @@ const RecipeEditor = ({ match }) => {
         const updatedIngredients = [...ingredients];
         updatedIngredients.splice(index, 1);
         setIngredients(updatedIngredients);
+        stateContext.showAlert("The ingredient has been removed!", "success");
     };
     const handleIngredientAdd = () => {
         if (
@@ -92,6 +131,7 @@ const RecipeEditor = ({ match }) => {
                 unit: formData.ingredient.unit,
             },
         ]);
+        resetIngredient();
         stateContext.showAlert("The ingredient has been added!", "success");
     };
 
@@ -100,7 +140,7 @@ const RecipeEditor = ({ match }) => {
             !formData.title ||
             !formData.img ||
             !formData.notes ||
-            !ingredients.length === 0
+            ingredients.length === 0
         ) {
             stateContext.showAlert(
                 "Please fill every field correctly!",
@@ -133,90 +173,29 @@ const RecipeEditor = ({ match }) => {
             stateContext.showAlert("The recipe has been updated!", "success");
         }
         resetFormData();
+        history.push("/");
     };
 
     return (
-        <div className={styles.root}>
+        <div className={classes.root}>
             <main>
-                <form className={classes.root} noValidate autoComplete="off">
-                    <label className={styles.label}>Basic information:</label>
-                    <TextField
-                        id="standard-basic"
-                        type="text"
-                        label="Title"
-                        name="title"
-                        value={formData.title}
-                        onChange={handleBasicsChange}
-                    />
-                    <TextField
-                        id="standard-basic"
-                        type="text"
-                        label="Image url"
-                        name="img"
-                        value={formData.img}
-                        onChange={handleBasicsChange}
-                    />
-                    <TextField
-                        id="standard-basic"
-                        type="text"
-                        label="Notes"
-                        name="notes"
-                        value={formData.notes}
-                        onChange={handleBasicsChange}
-                    />
-                    <label className={styles.label}>
-                        Specify the ingredients:
-                    </label>
-                    <TextField
-                        id="standard-basic"
-                        type="text"
-                        label="Ingredient name"
-                        name="name"
-                        value={formData.ingredient.name}
-                        onChange={handleIngredientChange}
-                    />
-                    <TextField
-                        id="standard-basic"
-                        type="text"
-                        label="Quantity"
-                        name="quantity"
-                        value={formData.ingredient.quantity}
-                        onChange={handleIngredientChange}
-                    />
-                    <TextField
-                        id="standard-basic"
-                        type="text"
-                        label="Unit"
-                        name="unit"
-                        value={formData.ingredient.unit}
-                        onChange={handleIngredientChange}
-                    />
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={handleIngredientAdd}
-                    >
-                        Add ingredient
-                    </Button>
-                </form>
-                <aside>
-                    <label className={styles.label}>Added ingredients:</label>
-                    {ingredients.map((ingredient, index) => (
-                        <Chip
-                            label={getFullIngredientText(ingredient)}
-                            onDelete={() => handleIngredientDelete(index)}
-                            color="secondary"
-                            className={styles.chip}
-                            clickable={false}
-                            key={index}
-                        />
-                    ))}
-                </aside>
+                <RecipeForm
+                    formData={formData}
+                    handleBasicsChange={handleBasicsChange}
+                    handleIngredientChange={handleIngredientChange}
+                    handleIngredientAdd={handleIngredientAdd}
+                    labelClass={classes.label}
+                />
+                <AddedIngredients
+                    classLabel={classes.label}
+                    ingredients={ingredients}
+                    handleIngredientDelete={handleIngredientDelete}
+                />
                 <Button
                     variant="contained"
                     color="primary"
                     onClick={publishRecipe}
-                    className={styles.publishButton}
+                    className={classes.publishButton}
                 >
                     {editMode ? "Update recipe" : "Publish recipe"}
                 </Button>

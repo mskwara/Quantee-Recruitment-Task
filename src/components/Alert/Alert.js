@@ -5,6 +5,9 @@ import Alert from "@material-ui/lab/Alert";
 const useStyles = makeStyles((theme) => ({
     root: {
         width: "100%",
+        position: "fixed",
+        top: 50,
+        zIndex: 20,
         "& > * + *": {
             marginTop: theme.spacing(2),
         },

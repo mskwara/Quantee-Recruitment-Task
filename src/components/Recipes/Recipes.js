@@ -3,11 +3,18 @@ import { useEffect } from "react";
 import { useQuery } from "react-query";
 import axios from "axios";
 import RecipeTile from "./RecipeTile/RecipeTile";
-import { StylesProvider } from "@material-ui/styles";
-import styles from "./Recipes.module.scss";
+import { makeStyles } from "@material-ui/core";
+
+const useStyles = makeStyles({
+    root: {
+        display: "flex",
+        flexWrap: "wrap",
+    },
+});
 
 const Recipes = () => {
-    const { isLoading, error, data } = useQuery("repoData", async () => {
+    const classes = useStyles();
+    const { isLoading, error, data } = useQuery("recipesData", async () => {
         // const res = await axios.get(
         //     "https://michalskwara.free.beeceptor.com/recipes"
         // );
@@ -80,7 +87,7 @@ const Recipes = () => {
     console.log(data);
 
     return (
-        <div className={styles.root}>
+        <div className={classes.root}>
             {data.map((recipe) => (
                 <RecipeTile recipe={recipe} key={recipe.id} />
             ))}
