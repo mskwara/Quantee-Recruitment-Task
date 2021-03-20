@@ -3,7 +3,8 @@ import { useEffect } from "react";
 import { useQuery } from "react-query";
 import axios from "axios";
 import RecipeTile from "./RecipeTile/RecipeTile";
-// TODO uninstall axios
+import { StylesProvider } from "@material-ui/styles";
+import styles from "./Recipes.module.scss";
 
 const Recipes = () => {
     const { isLoading, error, data } = useQuery("repoData", async () => {
@@ -46,6 +47,30 @@ const Recipes = () => {
                 ],
                 notes: "The best pizza",
             },
+            {
+                id: "572a9575-d84d-4dae-b943-1f8feb681bbe",
+                title: "Salad",
+                img:
+                    "https://www.howsweeteats.com/wp-content/uploads/2020/05/summer-salad-16-500x375.jpg",
+                ingredients: [
+                    {
+                        name: "tomatos",
+                        quantity: 3,
+                        unit: "pieces",
+                    },
+                    {
+                        name: "broccoli",
+                        quantity: 1,
+                        unit: "piece",
+                    },
+                    {
+                        name: "eggs",
+                        quantity: 2,
+                        unit: "pieces",
+                    },
+                ],
+                notes: "The most healthy salad!",
+            },
         ];
     });
     if (isLoading) return "Loading...";
@@ -55,7 +80,7 @@ const Recipes = () => {
     console.log(data);
 
     return (
-        <div className="Recipes">
+        <div className={styles.root}>
             {data.map((recipe) => (
                 <RecipeTile recipe={recipe} key={recipe.id} />
             ))}

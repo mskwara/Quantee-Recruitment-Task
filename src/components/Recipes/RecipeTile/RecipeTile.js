@@ -9,21 +9,34 @@ import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
 import CommentIcon from "@material-ui/icons/Comment";
 import Ingredients from "./Ingredients";
+import { useHistory } from "react-router-dom";
 
 import styles from "./RecipeTile.module.scss";
 
 const useStyles = makeStyles({
     root: {
         maxWidth: 345,
+        margin: "10px",
+        width: 345,
+        minWidth: 200,
+        display: "flex",
+        flexDirection: "column",
     },
     media: {
         height: 140,
+    },
+    buttons: {
+        marginTop: "auto",
     },
 });
 
 export default function MediaCard({ recipe }) {
     const classes = useStyles();
+    const history = useHistory();
 
+    const redirectTo = (url) => {
+        history.push(url);
+    };
     return (
         <Card className={classes.root}>
             <CardActionArea>
@@ -44,11 +57,19 @@ export default function MediaCard({ recipe }) {
                     </span>
                 </CardContent>
             </CardActionArea>
-            <CardActions>
+            <CardActions
+                classes={{
+                    root: classes.buttons,
+                }}
+            >
                 <Button size="small" color="primary">
                     View
                 </Button>
-                <Button size="small" color="primary">
+                <Button
+                    size="small"
+                    color="primary"
+                    onClick={() => redirectTo(`recipe-editor/${recipe.id}`)}
+                >
                     Edit
                 </Button>
             </CardActions>

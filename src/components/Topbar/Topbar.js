@@ -44,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export default function SimpleTabs(props) {
+export default function SimpleTabs() {
     const classes = useStyles();
     const history = useHistory();
     const [value, setValue] = React.useState(0);
@@ -54,7 +54,6 @@ export default function SimpleTabs(props) {
     };
 
     const redirectTo = (url) => {
-        console.log(url);
         history.push(url);
     };
 
