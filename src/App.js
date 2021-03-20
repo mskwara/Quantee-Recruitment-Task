@@ -1,25 +1,33 @@
-import logo from './logo.svg';
-import './App.css';
+import { QueryClient, QueryClientProvider, useQuery } from "react-query";
+
+import styles from "./App.module.scss";
+import Topbar from "./components/Topbar/Topbar";
+import CreateRecipe from "./components/CreateRecipe/CreateRecipe";
+import Recipes from "./components/Recipes/Recipes";
+import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
+
+const queryClient = new QueryClient();
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    return (
+        <QueryClientProvider client={queryClient}>
+            <Router>
+                <div className="App">
+                    <Topbar />
+                    <main className={styles.page}>
+                        <Switch>
+                            <Route path="/" exact>
+                                <Recipes />
+                            </Route>
+                            <Route path="/create-recipe">
+                                <CreateRecipe />
+                            </Route>
+                        </Switch>
+                    </main>
+                </div>
+            </Router>
+        </QueryClientProvider>
+    );
 }
 
 export default App;
