@@ -14,11 +14,13 @@ const useStyles = makeStyles({
     root: {
         display: "flex",
         justifyContent: "center",
+        width: "100%",
         "& main": {
             padding: 20,
             backgroundColor: "white",
             boxShadow: "1px 1px 2px rgba(0, 0, 0, 0.5)",
             width: 800,
+            minWidth: 200,
             display: "grid",
             gridTemplateColumns: "1fr 1fr",
             gridTemplateRows: "auto 50px auto",
@@ -28,12 +30,13 @@ const useStyles = makeStyles({
             columnGap: 20,
 
             "@media only screen and (max-width: 600px)": {
+                width: "100%",
                 gridTemplateColumns: "1fr",
                 gridTemplateRows: "auto auto 50px auto",
                 gridTemplateAreas: `"form"
                     "aside"
                     "publish"
-                    "loading`,
+                    "loading"`,
                 columnGap: 0,
             },
         },
