@@ -16,7 +16,7 @@ afterEach(() => {
     container = null;
 });
 
-it("renders alert with content", () => {
+it("renders alert with content", async () => {
     act(() => {
         render(
             <Alert content="There was a problem..." type="error" />,

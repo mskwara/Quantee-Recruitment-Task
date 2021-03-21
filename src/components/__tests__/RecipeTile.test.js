@@ -1,5 +1,5 @@
 import React from "react";
-import { act, render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 
 import RecipeTile from "../Recipes/RecipeTile/RecipeTile";
 import { unmountComponentAtNode } from "react-dom";
@@ -74,8 +74,8 @@ describe("RecipeTile test", () => {
         container = null;
     });
 
-    it("renders recipe tile with 4 ingredients", () => {
-        act(() => {
+    it("renders recipe tile with 4 ingredients", async () => {
+        await waitFor(() => {
             render(<RecipeTile recipe={recipe1} />, container); // render first recipe
         });
         expect(screen.getByText(recipe1.title)).toBeTruthy(); // check if title exists
@@ -100,8 +100,8 @@ describe("RecipeTile test", () => {
         expect(screen.getByText("1 more...")).toBeTruthy();
     });
 
-    it("renders recipe tile with 3 ingredients", () => {
-        act(() => {
+    it("renders recipe tile with 3 ingredients", async () => {
+        await waitFor(() => {
             render(<RecipeTile recipe={recipe2} />, container); //render second recipe
         });
         expect(screen.getByText(recipe2.title)).toBeTruthy(); // check if title exists
