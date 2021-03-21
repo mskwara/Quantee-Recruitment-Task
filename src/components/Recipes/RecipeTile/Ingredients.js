@@ -46,6 +46,7 @@ export default function ListDividers({ ingredients }) {
                         secondary={`${
                             ingredients.length - displayCount
                         } more...`}
+                        data-testid="more-ingredients"
                     />
                 </ListItem>
             )}

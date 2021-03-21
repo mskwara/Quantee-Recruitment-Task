@@ -6,13 +6,11 @@ import Alert from "../Alert/Alert";
 
 let container = null;
 beforeEach(() => {
-    // ustaw element DOM jako cel renderowania
     container = document.createElement("div");
     document.body.appendChild(container);
 });
 
 afterEach(() => {
-    // posprzątaj po zakończeniu
     unmountComponentAtNode(container);
     container.remove();
     container = null;
@@ -25,7 +23,7 @@ it("renders alert with content", () => {
             container
         );
     });
-    expect(container.textContent).toBe("There was a problem...");
+    expect(container.textContent).toBe("There was a problem..."); // check if alert renders appropiate content
     act(() => {
         render(
             <Alert content="The recipe has been published..." type="success" />,
