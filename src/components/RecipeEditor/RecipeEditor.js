@@ -78,7 +78,7 @@ const RecipeEditor = ({ match }) => {
             return res.data.recipe;
         },
         {
-            enabled: !!match.params.recipeId,
+            enabled: !!match.params.recipeId, // fires only if there is a recipeId
         }
     );
     useEffect(() => {
@@ -101,6 +101,7 @@ const RecipeEditor = ({ match }) => {
     }, [editMode, data]);
 
     if (isLoading)
+        // if useQuery is waiting for response
         return (
             <CircularProgress
                 classes={{
@@ -109,6 +110,7 @@ const RecipeEditor = ({ match }) => {
             />
         );
     if (error)
+        // if there was an error with getting recipe
         return (
             <ErrorPage
                 code={500}
