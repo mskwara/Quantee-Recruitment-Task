@@ -9,7 +9,8 @@ import StateContext from "./utilities/StateContext";
 import { makeStyles } from "@material-ui/core";
 import { ThemeProvider } from "@material-ui/core/styles";
 import muiTheme from "./utilities/theme";
-import NotFound from "./components/NotFound/NotFound";
+import ErrorPage from "./components/ErrorPage/ErrorPage";
+import notFoundIcon from "./assets/notFoundIcon.svg";
 
 const queryClient = new QueryClient();
 
@@ -25,6 +26,7 @@ const App = () => {
     const classes = useStyles();
 
     const [alertState, setAlertState] = useState({
+        // data necessary to display an alert
         timeout: null,
         visible: false,
         content: "",
@@ -32,12 +34,14 @@ const App = () => {
     });
 
     const showAlert = (content, type) => {
-        clearTimeout(alertState.timeout);
+        clearTimeout(alertState.timeout); // clear timeout assigned to previous alert
         setAlertState({
+            // set new alert data
             visible: true,
             content,
             type,
             timeout: setTimeout(() => {
+                // after 2 seconds alert will disappear
                 setAlertState({
                     ...alertState,
                     visible: false,
@@ -47,7 +51,7 @@ const App = () => {
     };
     return (
         <QueryClientProvider client={queryClient}>
-            <StateContext.Provider
+            <StateContext.Provider // provides function to display alert in the child components
                 value={{
                     showAlert,
                 }}
@@ -56,7 +60,7 @@ const App = () => {
                     <div className="App">
                         <Router>
                             <Topbar />
-                            {alertState.visible && (
+                            {alertState.visible && ( // if alert is visible, then show it
                                 <Alert
                                     content={alertState.content}
                                     type={alertState.type}
@@ -73,7 +77,13 @@ const App = () => {
                                         path="/recipe-editor/:recipeId"
                                         component={RecipeEditor}
                                     />
-                                    <Route path="/" component={NotFound} />
+                                    <Route path="/">
+                                        <ErrorPage
+                                            code={404}
+                                            message="Page not found..."
+                                            icon={notFoundIcon}
+                                        />
+                                    </Route>
                                 </Switch>
                             </main>
                         </Router>

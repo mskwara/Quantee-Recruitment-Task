@@ -66,12 +66,12 @@ export default function SimpleTabs() {
                 >
                     <Tab
                         label="Recipes"
-                        onClick={() => redirectTo("/")}
+                        onClick={() => redirectTo("/")} // redirect to another view when clicked
                         {...a11yProps(0)}
                     />
                     <Tab
                         label="Create recipe"
-                        onClick={() => redirectTo("/create-recipe")}
+                        onClick={() => redirectTo("/create-recipe")} // redirect to another view when clicked
                         {...a11yProps(1)}
                     />
                 </Tabs>

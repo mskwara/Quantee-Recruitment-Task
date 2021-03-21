@@ -3,6 +3,7 @@ import { useQuery } from "react-query";
 import RecipeTile from "./RecipeTile/RecipeTile";
 import ErrorPage from "../ErrorPage/ErrorPage";
 import { CircularProgress, makeStyles } from "@material-ui/core";
+import errorIcon from "../../assets/error.svg";
 
 const useStyles = makeStyles({
     root: {
@@ -17,6 +18,7 @@ const useStyles = makeStyles({
 const Recipes = () => {
     const classes = useStyles();
     const { isLoading, error, data } = useQuery("recipesData", async () => {
+        // TODO
         // const res = await axios.get(
         //     "https://michalskwara.free.beeceptor.com/recipes"
         // );
@@ -83,6 +85,7 @@ const Recipes = () => {
         ];
     });
     if (isLoading)
+        // if waiting for the response, show loading spinner
         return (
             <CircularProgress
                 classes={{
@@ -91,9 +94,17 @@ const Recipes = () => {
             />
         );
 
-    if (error) return <ErrorPage />;
+    if (error)
+        return (
+            <ErrorPage
+                code={500}
+                message="Server has crashed..."
+                icon={errorIcon}
+            />
+        ); // if there was a problem with the server, show error page
 
     return (
+        // else render recipes
         <div className={classes.root}>
             {data.map((recipe) => (
                 <RecipeTile recipe={recipe} key={recipe.id} />

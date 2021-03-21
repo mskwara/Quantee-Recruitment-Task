@@ -1,5 +1,4 @@
 import { makeStyles } from "@material-ui/core";
-import errorIcon from "../../assets/error.svg";
 
 const useStyles = makeStyles({
     root: {
@@ -26,14 +25,14 @@ const useStyles = makeStyles({
     },
 });
 
-const NotFound = () => {
+const NotFound = ({ code, message, icon }) => {
     const classes = useStyles();
 
     return (
         <div className={classes.root}>
-            <img src={errorIcon} alt="" />
-            <p className={classes.code}>500</p>
-            <p className={classes.text}>Server has crashed...</p>
+            <img src={icon} alt="" />
+            <p className={classes.code}>{code}</p>
+            <p className={classes.text}>{message}</p>
         </div>
     );
 };

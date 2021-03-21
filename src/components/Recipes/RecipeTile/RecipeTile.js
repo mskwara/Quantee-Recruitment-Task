@@ -23,15 +23,15 @@ const useStyles = makeStyles({
     media: {
         height: 140,
     },
-    buttons: {
-        marginTop: "auto",
-    },
     notes: {
         display: "flex",
         alignItems: "center",
+        margin: "auto 20px 0 20px",
 
         "& p": {
             marginLeft: 10,
+            fontSize: "9pt",
+            fontFamily: "Roboto",
         },
     },
 });
@@ -40,8 +40,9 @@ export default function MediaCard({ recipe }) {
     const classes = useStyles();
     const history = useHistory();
 
-    const editRecipe = () => {
+    const onEditClick = () => {
         history.push({
+            // switch to other url and pass recipe data in state
             pathname: `recipe-editor/${recipe.id}`,
             state: {
                 ...recipe,
@@ -62,21 +63,22 @@ export default function MediaCard({ recipe }) {
                     </Typography>
 
                     <Ingredients ingredients={recipe.ingredients} />
-                    <span className={classes.notes}>
-                        <CommentIcon color="primary" />
-                        <p>{recipe.notes}</p>
-                    </span>
                 </CardContent>
             </CardActionArea>
+            <span className={classes.notes}>
+                <CommentIcon color="primary" />
+                <p>{recipe.notes}</p>
+            </span>
             <CardActions
                 classes={{
                     root: classes.buttons,
                 }}
             >
                 <Button size="small" color="primary">
+                    {/* View is not implemented */}
                     View
                 </Button>
-                <Button size="small" color="primary" onClick={editRecipe}>
+                <Button size="small" color="primary" onClick={onEditClick}>
                     Edit
                 </Button>
             </CardActions>

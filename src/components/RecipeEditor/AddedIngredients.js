@@ -28,15 +28,16 @@ const AddedIngredients = ({
             <label className={classLabel}>Added ingredients:</label>
             {ingredients.map((ingredient, index) => (
                 <Chip
-                    label={getFullIngredientText(ingredient)}
+                    label={getFullIngredientText(ingredient)} // full ingredient text comes from helper.js
                     onDelete={() => handleIngredientDelete(index)}
                     color="secondary"
                     className={classes.chip}
                     clickable={false}
                     key={index}
+                    data-testid="chip"
                 />
             ))}
-            {ingredients.length === 0 && (
+            {ingredients.length === 0 && ( // if there are no ingredients show message
                 <p className={classes.empty}>No ingredients specified...</p>
             )}
         </div>

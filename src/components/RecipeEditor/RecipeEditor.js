@@ -1,6 +1,6 @@
-import { React, useContext, useState } from "react";
+import { React, useContext, useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import { Button } from "@material-ui/core";
+import { Button, CircularProgress } from "@material-ui/core";
 import StateContext from "../../utilities/StateContext";
 import axios from "axios";
 import AddedIngredients from "./AddedIngredients";
@@ -18,17 +18,19 @@ const useStyles = makeStyles({
             width: 800,
             display: "grid",
             gridTemplateColumns: "1fr 1fr",
-            gridTemplateRows: "auto 50px",
-            gridTemplateAreas: `'form aside' 
-                'publish publish'`,
+            gridTemplateRows: "auto 50px auto",
+            gridTemplateAreas: `"form aside" 
+                "publish publish"
+                "loading loading"`,
             columnGap: 20,
 
             "@media only screen and (max-width: 600px)": {
                 gridTemplateColumns: "1fr",
-                gridTemplateRows: "auto auto 50px",
+                gridTemplateRows: "auto auto 50px auto",
                 gridTemplateAreas: `"form"
                     "aside"
-                    "publish"`,
+                    "publish"
+                    "loading`,
                 columnGap: 0,
             },
         },
@@ -43,6 +45,10 @@ const useStyles = makeStyles({
         textTransform: "uppercase",
         margin: "20px 0 0 0",
     },
+    spinner: {
+        gridArea: "loading",
+        margin: "10px auto",
+    },
 });
 
 const RecipeEditor = ({ match, location }) => {
@@ -50,24 +56,34 @@ const RecipeEditor = ({ match, location }) => {
     const history = useHistory();
     const stateContext = useContext(StateContext);
 
-    const editMode = match && match.params.recipeId;
+    const editMode = match.params.recipeId != null; // true/false
 
-    const [ingredients, setIngredients] = useState(
-        (editMode && location.state.ingredients) || []
-    );
+    const [ingredients, setIngredients] = useState(); // ingredients added to this recipe
 
-    const [formData, setFormData] = useState({
-        title: (editMode && location.state.title) || "",
-        img: (editMode && location.state.img) || "",
-        notes: (editMode && location.state.notes) || "",
-        ingredient: {
-            name: "",
-            quantity: "",
-            unit: "",
-        },
-    });
+    const [formData, setFormData] = useState(); // other textfields
+    const [loading, setLoading] = useState(false); // other textfields
+
+    useEffect(() => {
+        // every time when editMode is changed
+        setFormData({
+            // if there is information about recipe, then use it, else set empty string
+            title: (editMode && location.state && location.state.title) || "",
+            img: (editMode && location.state && location.state.img) || "",
+            notes: (editMode && location.state && location.state.notes) || "",
+            ingredient: {
+                name: "",
+                quantity: "",
+                unit: "",
+            },
+        });
+        setIngredients(
+            // if there is information about ingredients, then use it, else set empty array
+            (editMode && location.state && location.state.ingredients) || []
+        );
+    }, [editMode, location.state]);
 
     const resetFormData = () => {
+        // resets each field
         setFormData({
             title: "",
             img: "",
@@ -81,6 +97,7 @@ const RecipeEditor = ({ match, location }) => {
     };
 
     const resetIngredient = () => {
+        // resets new-ingredient fields
         setFormData({
             ...formData,
             ingredient: {
@@ -91,23 +108,22 @@ const RecipeEditor = ({ match, location }) => {
         });
     };
 
-    const handleBasicsChange = (event) => {
+    const handleFieldChange = (event, isIngredient) => {
+        // when one of the textfields is changed
         const updatedFormData = { ...formData };
-        updatedFormData[event.target.name] = event.target.value;
-        setFormData(updatedFormData);
-    };
-
-    const handleIngredientChange = (event) => {
-        const updatedFormData = { ...formData };
-        updatedFormData.ingredient[event.target.name] = event.target.value;
+        if (isIngredient) {
+            updatedFormData.ingredient[event.target.name] = event.target.value;
+        } else {
+            updatedFormData[event.target.name] = event.target.value;
+        }
         setFormData(updatedFormData);
     };
 
     const handleIngredientDelete = (index) => {
         const updatedIngredients = [...ingredients];
         updatedIngredients.splice(index, 1);
-        setIngredients(updatedIngredients);
-        stateContext.showAlert("The ingredient has been removed!", "success");
+        setIngredients(updatedIngredients); // set ingredients as updated array
+        stateContext.showAlert("The ingredient has been removed!", "success"); // show alert
     };
     const handleIngredientAdd = () => {
         if (
@@ -116,6 +132,7 @@ const RecipeEditor = ({ match, location }) => {
             isNaN(formData.ingredient.quantity) ||
             !formData.ingredient.unit
         ) {
+            // verify the fields
             stateContext.showAlert(
                 "Please fill ingredient's fields correctly!",
                 "error"
@@ -129,18 +146,19 @@ const RecipeEditor = ({ match, location }) => {
                 quantity: formData.ingredient.quantity,
                 unit: formData.ingredient.unit,
             },
-        ]);
-        resetIngredient();
-        stateContext.showAlert("The ingredient has been added!", "success");
+        ]); // append new ingredient to the end of ingredients list
+        resetIngredient(); // reset textfields
+        stateContext.showAlert("The ingredient has been added!", "success"); // show alert
     };
 
-    const publishRecipe = () => {
+    const publishRecipe = async () => {
         if (
             !formData.title ||
             !formData.img ||
             !formData.notes ||
             ingredients.length === 0
         ) {
+            // verify textfields
             stateContext.showAlert(
                 "Please fill every field correctly!",
                 "error"
@@ -149,56 +167,91 @@ const RecipeEditor = ({ match, location }) => {
         }
 
         if (!editMode) {
-            axios.post("https://michalskwara.free.beeceptor.com/recipes", {
-                title: formData.title,
-                img: formData.img,
-                notes: formData.notes,
-                ingredients,
-            });
+            // if not editMode, then create a new recipe
+            try {
+                setLoading(true);
+                await axios.post(
+                    "https://michalskwara.free.beeceptor.com/recipes",
+                    {
+                        title: formData.title,
+                        img: formData.img,
+                        notes: formData.notes,
+                        ingredients,
+                    }
+                );
+            } catch (err) {
+                stateContext.showAlert(
+                    "The problem occured when trying to create recipe!",
+                    "error"
+                );
+            } finally {
+                setLoading(false);
+            }
             stateContext.showAlert(
                 "Your recipe has been published!",
                 "success"
             );
         } else {
-            axios.patch(
-                `https://michalskwara.free.beeceptor.com/recipes/${match.params.recipeId}`,
-                {
-                    title: formData.title,
-                    img: formData.img,
-                    notes: formData.notes,
-                    ingredients,
-                }
-            );
+            // else update existing one
+            try {
+                setLoading(true);
+                await axios.patch(
+                    `https://michalskwara.free.beeceptor.com/recipes/${match.params.recipeId}`,
+                    {
+                        title: formData.title,
+                        img: formData.img,
+                        notes: formData.notes,
+                        ingredients,
+                    }
+                );
+            } catch (err) {
+                stateContext.showAlert(
+                    "The problem occured when trying to update the recipe!",
+                    "error"
+                );
+            } finally {
+                setLoading(false);
+            }
             stateContext.showAlert("The recipe has been updated!", "success");
         }
-        resetFormData();
-        history.push("/");
+        resetFormData(); // reset textfields
+        history.push("/"); // go to recipes page
     };
 
     return (
         <div className={classes.root}>
-            <main>
-                <RecipeForm
-                    formData={formData}
-                    handleBasicsChange={handleBasicsChange}
-                    handleIngredientChange={handleIngredientChange}
-                    handleIngredientAdd={handleIngredientAdd}
-                    labelClass={classes.label}
-                />
-                <AddedIngredients
-                    classLabel={classes.label}
-                    ingredients={ingredients}
-                    handleIngredientDelete={handleIngredientDelete}
-                />
-                <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={publishRecipe}
-                    className={classes.publishButton}
-                >
-                    {editMode ? "Update recipe" : "Publish recipe"}
-                </Button>
-            </main>
+            {formData &&
+                ingredients && ( // wait for the data assignment in useEffect
+                    <main>
+                        <RecipeForm
+                            formData={formData}
+                            handleFieldChange={handleFieldChange}
+                            // handleIngredientChange={handleIngredientChange}
+                            handleIngredientAdd={handleIngredientAdd}
+                            labelClass={classes.label}
+                        />
+                        <AddedIngredients
+                            classLabel={classes.label}
+                            ingredients={ingredients}
+                            handleIngredientDelete={handleIngredientDelete}
+                        />
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={publishRecipe}
+                            className={classes.publishButton}
+                        >
+                            {editMode ? "Update recipe" : "Publish recipe"}
+                        </Button>
+                        {loading && (
+                            <CircularProgress
+                                classes={{
+                                    root: classes.spinner,
+                                }}
+                            />
+                        )}
+                    </main>
+                )}
         </div>
     );
 };

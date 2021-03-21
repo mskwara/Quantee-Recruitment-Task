@@ -20,8 +20,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const RecipeForm = ({
-    handleBasicsChange,
-    handleIngredientChange,
+    handleFieldChange,
     formData,
     handleIngredientAdd,
     labelClass,
@@ -37,7 +36,7 @@ const RecipeForm = ({
                 label="Title"
                 name="title"
                 value={formData.title}
-                onChange={handleBasicsChange}
+                onChange={handleFieldChange}
             />
             <TextField
                 id="standard-basic"
@@ -45,7 +44,7 @@ const RecipeForm = ({
                 label="Image url"
                 name="img"
                 value={formData.img}
-                onChange={handleBasicsChange}
+                onChange={handleFieldChange}
             />
             <TextField
                 id="standard-basic"
@@ -53,7 +52,7 @@ const RecipeForm = ({
                 label="Notes"
                 name="notes"
                 value={formData.notes}
-                onChange={handleBasicsChange}
+                onChange={handleFieldChange}
             />
             <label className={labelClass}>Specify the ingredients:</label>
             <TextField
@@ -62,7 +61,7 @@ const RecipeForm = ({
                 label="Ingredient name"
                 name="name"
                 value={formData.ingredient.name}
-                onChange={handleIngredientChange}
+                onChange={(e) => handleFieldChange(e, true)}
             />
             <TextField
                 id="standard-basic"
@@ -70,7 +69,7 @@ const RecipeForm = ({
                 label="Quantity"
                 name="quantity"
                 value={formData.ingredient.quantity}
-                onChange={handleIngredientChange}
+                onChange={(e) => handleFieldChange(e, true)}
             />
             <TextField
                 id="standard-basic"
@@ -78,7 +77,7 @@ const RecipeForm = ({
                 label="Unit"
                 name="unit"
                 value={formData.ingredient.unit}
-                onChange={handleIngredientChange}
+                onChange={(e) => handleFieldChange(e, true)}
             />
             <Button
                 variant="contained"
