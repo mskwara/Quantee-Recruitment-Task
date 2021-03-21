@@ -3,9 +3,12 @@ import { makeStyles } from "@material-ui/core/styles";
 import { Button, CircularProgress } from "@material-ui/core";
 import StateContext from "../../utilities/StateContext";
 import axios from "axios";
+import errorIcon from "../../assets/error.svg";
 import AddedIngredients from "./AddedIngredients";
 import RecipeForm from "./RecipeForm";
 import { useHistory } from "react-router-dom";
+import { useQuery } from "react-query";
+import ErrorPage from "../ErrorPage/ErrorPage";
 
 const useStyles = makeStyles({
     root: {
@@ -51,7 +54,7 @@ const useStyles = makeStyles({
     },
 });
 
-const RecipeEditor = ({ match, location }) => {
+const RecipeEditor = ({ match }) => {
     const classes = useStyles();
     const history = useHistory();
     const stateContext = useContext(StateContext);
@@ -63,13 +66,25 @@ const RecipeEditor = ({ match, location }) => {
     const [formData, setFormData] = useState(); // other textfields
     const [loading, setLoading] = useState(false); // other textfields
 
+    const { isLoading, error, data } = useQuery(
+        ["recipe", match.params.recipeId],
+        async () => {
+            const res = await axios.get(
+                `https://michalskwara.free.beeceptor.com/recipes/${match.params.recipeId}`
+            );
+            return res.data.recipe;
+        },
+        {
+            enabled: !!match.params.recipeId,
+        }
+    );
     useEffect(() => {
         // every time when editMode is changed
         setFormData({
             // if there is information about recipe, then use it, else set empty string
-            title: (editMode && location.state && location.state.title) || "",
-            img: (editMode && location.state && location.state.img) || "",
-            notes: (editMode && location.state && location.state.notes) || "",
+            title: (editMode && data && data.title) || "",
+            img: (editMode && data && data.img) || "",
+            notes: (editMode && data && data.notes) || "",
             ingredient: {
                 name: "",
                 quantity: "",
@@ -78,9 +93,26 @@ const RecipeEditor = ({ match, location }) => {
         });
         setIngredients(
             // if there is information about ingredients, then use it, else set empty array
-            (editMode && location.state && location.state.ingredients) || []
+            (editMode && data && data.ingredients) || []
         );
-    }, [editMode, location.state]);
+    }, [editMode, data]);
+
+    if (isLoading)
+        return (
+            <CircularProgress
+                classes={{
+                    root: classes.spinner,
+                }}
+            />
+        );
+    if (error)
+        return (
+            <ErrorPage
+                code={500}
+                message="Server has crashed..."
+                icon={errorIcon}
+            />
+        );
 
     const resetFormData = () => {
         // resets each field
