@@ -1,4 +1,4 @@
-# Quantee Recruitment Task - Michał Skwara
+# Simple Recipes Example
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
